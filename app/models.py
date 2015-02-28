@@ -110,6 +110,19 @@ class User(UserMixin, db.Model):
                 db.session.rollback()
 
     @staticmethod
+    def create_admin(email, username, password):
+        u = User(email=email,
+                 username=username,
+                 password=password,
+                 confirmed=True,
+                 role=Role.query.filter_by(permissions=0xff).first())
+        db.session.add(u)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+
+    @staticmethod
     def add_self_follows():
         for user in User.query.all():
             if not user.is_following(user):

@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 
-{% block title %}Flasky{% endblock %}
+{% block title %}Flask Photo App{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -10,8 +10,8 @@
 {% endblock %}
 
 {% block styles %}
-<!-- Bootswatch Cosmo theme -->
-<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/paper/bootstrap.min.css" rel="stylesheet">
+<!-- Bootswatch Simplex theme -->
+<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/simplex/bootstrap.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block navbar %}
@@ -24,7 +24,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">Flasky</a>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">Flask Photo App</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">

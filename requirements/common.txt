@@ -1,4 +1,5 @@
 Flask==0.10.1
+Flask-Assets-0.10
 Flask-Bootstrap==3.3.0.1
 Flask-HTTPAuth==2.3.0
 Flask-Login==0.2.11

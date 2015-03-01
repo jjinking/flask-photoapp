@@ -1,0 +1,92 @@
+{% extends "admin/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}{{ super() }} - User{% endblock %}
+
+{% block page_content %}
+
+<!-- Modal -->
+<div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="formModalLabel">Edit User</h4>
+      </div>
+
+      <form method="post" class="form" role="form">
+        <div class="modal-body">
+  	  {{ form.hidden_tag() }}
+	  {{ wtf.form_errors(form, hiddens="only") }}
+	  {{ wtf.form_field(form.email) }}
+	  {{ wtf.form_field(form.username) }}
+	  {{ wtf.form_field(form.confirmed) }}
+	  {{ wtf.form_field(form.role) }}
+	  {{ wtf.form_field(form.name) }}
+	  {{ wtf.form_field(form.location) }}
+	  {{ wtf.form_field(form.about_me) }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" value="Update">
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+<!-- end Modal -->
+
+<div class="panel panel-default">
+  <div class="panel-heading">User Details</div>
+  <div class="panel-body">
+    <div>
+      <a href="{{ url_for('.users') }}"
+         type="button"
+         class="btn btn-default btn-small">
+        <span class="glyphicon glyphicon-th-list"></span> Back to List
+      </a>
+      <button type="button"
+	      class="btn btn-primary btn-small"
+	      data-toggle="modal"
+	      data-target="#formModal">
+        Edit User
+      </button>
+      <a href="{{ url_for('.user_delete', id=user.id) }}"
+	 type="button"
+	 class="btn btn-danger btn-small"
+	 onClick="return confirm('Delete user?')">
+        Delete User
+      </a>
+    </div>
+   
+    <div>
+      
+    </div>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+    	<th>Field</td>
+    	<th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Email</td><td>{{ user.email }}</td></tr>
+	<tr><td>Username</td><td>{{ user.username }}</td></tr>
+        <tr><td>Role</td><td>{{ user.role }}</td></tr>
+	<tr><td>Status</td><td>{% if user.confirmed %}Confirmed{% else %}Unconfirmed{% endif %}</td></tr>
+	<tr><td>Name</td><td>{{ user.name }}</td></tr>
+	<tr><td>Location</td><td>{{ user.location }}</td></tr>
+	<tr><td>About User</td><td>{{ user.about_me }}</td></tr>
+        <tr><td>Member Since</td><td>{{ user.member_since.strftime('%Y-%m-%d') }}</td></tr>
+	<tr><td>Last seen</td><td>{{ user.last_seen.strftime('%Y-%m-%d') }}</td></tr>
+	<tr><td>Number of Posts</td><td>{{ user.posts.count() }}</td></tr>
+	<tr><td>Following</td><td>{{ user.followed.count() - 1 }} Users</td></tr>
+	<tr><td>Followers</td><td>{{ user.followers.count() - 1 }} Users</td></tr>
+	<tr><td>Comments</td><td>{{ user.comments.count() }} Comments</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

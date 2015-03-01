@@ -18,7 +18,8 @@ class Config:
     APP_POSTS_PER_PAGE = 20
     APP_FOLLOWERS_PER_PAGE = 50
     APP_COMMENTS_PER_PAGE = 30
-    APP_SLOW_DB_QUERY_TIME=0.5
+    APP_SLOW_DB_QUERY_TIME = 0.5
+    ADMIN_ITEMS_PER_PAGE = 20
     ASSETS_DEBUG = False
     ASSETS_BUNDLES = {'site_css':{'files': ('site.css',),
                                   'filters': 'cssmin'},

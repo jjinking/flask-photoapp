@@ -1,4 +1,5 @@
 from flask import Flask
+from flask.ext.assets import Environment, Bundle
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.mail import Mail
 from flask.ext.moment import Moment
@@ -7,6 +8,7 @@ from flask.ext.login import LoginManager
 from flask.ext.pagedown import PageDown
 from config import config
 
+assets = Environment()
 bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
@@ -23,6 +25,7 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
+    assets.init_app(app)
     bootstrap.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
@@ -33,6 +36,14 @@ def create_app(config_name):
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
         from flask.ext.sslify import SSLify
         sslify = SSLify(app)
+
+    # Set up web assets
+    if not assets._named_bundles:
+        for k,v in app.config['ASSETS_BUNDLES'].iteritems():
+            _output = '.'.join(k.rsplit('_', 1))
+            assets.register(k, Bundle(*v['files'],
+                                      filters=v['filters'],
+                                      output='gen/{}'.format(_output)))
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

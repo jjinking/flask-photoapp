@@ -19,6 +19,11 @@ class Config:
     APP_FOLLOWERS_PER_PAGE = 50
     APP_COMMENTS_PER_PAGE = 30
     APP_SLOW_DB_QUERY_TIME=0.5
+    ASSETS_DEBUG = False
+    ASSETS_BUNDLES = {'site_css':{'files': ('site.css',),
+                                  'filters': 'cssmin'},
+                      'site_js': {'files': ('site.js',),
+                                  'filters': 'closure_js'}}
 
     @staticmethod
     def init_app(app):
@@ -27,12 +32,14 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    ASSETS_DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
 
 class TestingConfig(Config):
     TESTING = True
+    ASSETS_DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
     WTF_CSRF_ENABLED = False

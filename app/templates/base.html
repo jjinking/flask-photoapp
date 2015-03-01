@@ -6,7 +6,13 @@
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+
+{% block assets_css %}
+  {% assets "site_css" %}
+    <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+  {% endassets %}
+{% endblock %}
+
 {% endblock %}
 
 {% block styles %}
@@ -74,4 +80,11 @@
 {% block scripts %}
 {{ super() }}
 {{ moment.include_moment() }}
+
+{% block assets_js %}
+  {% assets "site_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+{% endblock %}
+
 {% endblock %}

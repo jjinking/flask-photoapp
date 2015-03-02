@@ -1,20 +1,26 @@
 from flask import render_template, redirect, request, url_for, \
-    flash, current_app, Response
+    flash, current_app, Response, abort
 from flask.ext.login import login_user, logout_user, login_required, \
     current_user
 from . import admin
 from .. import db
 from ..models import Role, User, Permission
-from ..decorators import admin_required
 from .forms import CreateUserForm, EditUserForm
 
+@admin.before_request
+def admin_only():
+    '''
+    Restrict access to this blueprint for admin users only
+    If non-admin users try to access it, return 403 forbidden error
+    '''
+    if not current_user.is_administrator():
+        return abort(403)
+
 @admin.route('/')
-@admin_required
 def index():
     return render_template('admin/index.html')
 
 @admin.route('/users', methods=['GET', 'POST'])
-@admin_required
 def users():
     '''
     Manage users - list users
@@ -43,7 +49,6 @@ def users():
                            users=users, pagination=pagination)
 
 @admin.route('/user/<int:id>', methods=['GET', 'POST'])
-@admin_required
 def user(id):
     '''
     View specific user
@@ -74,7 +79,6 @@ def user(id):
                            user=user)
 
 @admin.route('/user/delete/<int:id>', methods=['GET', 'POST'])
-@admin_required
 def user_delete(id):
     '''
     Delete user

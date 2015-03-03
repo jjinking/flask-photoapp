@@ -2,7 +2,8 @@ import unittest
 import time
 from datetime import datetime
 from app import create_app, db
-from app.models import User, AnonymousUser, Role, Permission, Follow
+from app.models import User, AnonymousUser, Role, Permission, Follow, Post, \
+    Comment
 
 
 class UserModelTestCase(unittest.TestCase):
@@ -187,3 +188,50 @@ class UserModelTestCase(unittest.TestCase):
         db.session.delete(u2)
         db.session.commit()
         self.assertTrue(Follow.query.count() == 1)
+
+    def test_user_cascade_posts(self):
+        '''
+        If a user is deleted, his or her posts should also be deleted
+        '''
+        u = User(email='foo@foo.com', password='foo')
+        db.session.add(u)
+        db.session.commit()
+        Post.generate_fake(count=10)
+        # Test that 10 posts have been created for the single user of the site
+        self.assertEqual(len(u.posts.all()), 10)
+        self.assertEqual(len(Post.query.all()), 10)
+
+        # After deleting the user, there should not be any posts
+        db.session.delete(u)
+        db.session.commit()
+        self.assertEqual(len(Post.query.all()), 0)
+
+    def test_user_cascade_comments(self):
+        '''
+        If a user is deleted, his or her comments should also be deleted
+        '''
+        # Create users
+        u1 = User(email='foo@foo.com', password='foo')
+        u2 = User(email='foo2@foo.com', password='foo2')
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+        # Create a post by u1
+        p = Post(body='foo',
+                    body_html='foo',
+                    author=u1)
+        db.session.add(p)
+        db.session.commit()
+        # Create a comment by u2
+        c = Comment(body='foobar',
+                    body_html='foobar',
+                    disabled=False,
+                    author=u2,
+                    post=p)
+        db.session.add(p)
+        db.session.commit()
+        
+        # After deleting u2, there should not be any comments
+        db.session.delete(u2)
+        db.session.commit()
+        self.assertEqual(len(Comment.query.all()), 0)

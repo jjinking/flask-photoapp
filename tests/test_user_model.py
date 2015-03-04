@@ -204,7 +204,28 @@ class UserModelTestCase(unittest.TestCase):
         # After deleting the user, there should not be any posts
         db.session.delete(u)
         db.session.commit()
+        self.assertEqual(len(User.query.all()), 0)
         self.assertEqual(len(Post.query.all()), 0)
+
+        ### Composiiton vs aggregate
+        # Test that deleting all the posts of a user doesn't remove user
+        u = User(email='foo@foo.com', password='foo')
+        db.session.add(u)
+        db.session.commit()
+        self.assertEqual(len(User.query.all()), 1)
+        p = Post(body='foo',
+                 body_html='foo',
+                 author=u)
+        db.session.add(p)
+        db.session.commit()
+        # Test that the post was successfully created
+        self.assertEqual(len(u.posts.all()), 1)
+        self.assertEqual(len(Post.query.all()), 1)
+        
+        # Delete post
+        db.session.delete(p)
+        db.session.commit()
+        self.assertEqual(len(User.query.all()), 1)
 
     def test_user_cascade_comments(self):
         '''
@@ -230,8 +251,38 @@ class UserModelTestCase(unittest.TestCase):
                     post=p)
         db.session.add(p)
         db.session.commit()
+        # Test that the comment is there
+        self.assertEqual(len(Comment.query.all()), 1)
         
         # After deleting u2, there should not be any comments
         db.session.delete(u2)
         db.session.commit()
         self.assertEqual(len(Comment.query.all()), 0)
+
+        ### Composition vs aggregate
+        # Test that deleting all the comments of a user doesn't remove user
+        # Create u2
+        u2 = User(email='foo2@foo.com', password='foo2')
+        db.session.add(u2)
+        db.session.commit()
+        # Test that there are 2 users
+        self.assertEqual(len(User.query.all()), 2)
+        
+        # Create a comment by u2
+        c = Comment(body='foobar',
+                    body_html='foobar',
+                    disabled=False,
+                    author=u2,
+                    post=p)
+        db.session.add(p)
+        db.session.commit()
+        
+        # Test that comment is there
+        self.assertEqual(len(Comment.query.all()), 1)
+
+        # Delete comment
+        db.session.delete(c)
+        db.session.commit()
+        self.assertEqual(len(User.query.all()), 2)
+        
+        

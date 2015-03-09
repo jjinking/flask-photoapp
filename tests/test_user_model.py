@@ -239,8 +239,8 @@ class UserModelTestCase(unittest.TestCase):
         db.session.commit()
         # Create a post by u1
         p = Post(body='foo',
-                    body_html='foo',
-                    author=u1)
+                 body_html='foo',
+                 author=u1)
         db.session.add(p)
         db.session.commit()
         # Create a comment by u2
@@ -249,15 +249,15 @@ class UserModelTestCase(unittest.TestCase):
                     disabled=False,
                     author=u2,
                     post=p)
-        db.session.add(p)
+        db.session.add(c)
         db.session.commit()
         # Test that the comment is there
-        self.assertEqual(len(Comment.query.all()), 1)
+        self.assertEqual(Comment.query.count(), 1)
         
         # After deleting u2, there should not be any comments
         db.session.delete(u2)
         db.session.commit()
-        self.assertEqual(len(Comment.query.all()), 0)
+        self.assertEqual(Comment.query.count(), 0)
 
         ### Composition vs aggregate
         # Test that deleting all the comments of a user doesn't remove user
@@ -266,7 +266,7 @@ class UserModelTestCase(unittest.TestCase):
         db.session.add(u2)
         db.session.commit()
         # Test that there are 2 users
-        self.assertEqual(len(User.query.all()), 2)
+        self.assertEqual(User.query.count(), 2)
         
         # Create a comment by u2
         c = Comment(body='foobar',
@@ -278,11 +278,11 @@ class UserModelTestCase(unittest.TestCase):
         db.session.commit()
         
         # Test that comment is there
-        self.assertEqual(len(Comment.query.all()), 1)
+        self.assertEqual(Comment.query.count(), 1)
 
         # Delete comment
         db.session.delete(c)
         db.session.commit()
-        self.assertEqual(len(User.query.all()), 2)
+        self.assertEqual(User.query.count(), 2)
         
         

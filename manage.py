@@ -76,6 +76,10 @@ def deploy():
     # create self-follows for all users
     User.add_self_follows()
 
+    # Create upload directory for photos
+    if not os.path.exists(app.config['UPLOADS_DIR']):
+        os.makedirs(app.config['UPLOADS_DIR'])
+
 
 if __name__ == '__main__':
     manager.run()

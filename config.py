@@ -20,6 +20,9 @@ class Config:
     APP_COMMENTS_PER_PAGE = 30
     APP_SLOW_DB_QUERY_TIME = 0.5
     ADMIN_ITEMS_PER_PAGE = 20
+    UPLOADS_DIR = os.path.join(basedir, 'app', 'uploads')
+    ALLOWED_EXTENSIONS = {'jpg', 'jpe', 'jpeg', 'png', 'gif', 'svg', 'bmp'}
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # Max uploads 16 MB
     ASSETS_DEBUG = False
     ASSETS_BUNDLES = {'site_css':{'files': ('site.css',),
                                   'filters': 'cssmin'},

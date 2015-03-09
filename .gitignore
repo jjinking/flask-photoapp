@@ -43,3 +43,6 @@ venv
 
 # Editor backup files
 *~
+
+# Uploads folder
+uploads/

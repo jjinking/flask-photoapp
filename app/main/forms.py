@@ -1,6 +1,7 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
     SubmitField
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask.ext.pagedown.fields import PageDownField
@@ -52,8 +53,20 @@ class EditProfileAdminForm(Form):
 
 class PostForm(Form):
     body = PageDownField("What's on your mind?", validators=[Required()])
+    photo = FileField('Photo', validators=[FileRequired()])
     submit = SubmitField('Submit')
 
+    def __init__(self, file_allowed, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        
+        # Add additional validator for photo field
+        v = FileAllowed(list(file_allowed),
+                        'Please upload images only.')
+        self.photo.validators.append(v)
+        flags = getattr(v, 'field_flags', ())
+        for f in flags:
+            setattr(self.flags, f, True)
+        
 
 class CommentForm(Form):
     body = StringField('Enter your comment', validators=[Required()])

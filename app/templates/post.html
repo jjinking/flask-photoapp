@@ -5,6 +5,11 @@
 {% block title %}{{ super() }} - Post{% endblock %}
 
 {% block page_content %}
+<div class="row">
+  <img class="img-responsive center-block"
+       src="{{ url_for('main.uploaded_photos',filename=posts[0].imagefile) }}"
+       alt="photo">
+</div>
 {% include '_posts.html' %}
 <h4 id="comments">Comments</h4>
 {% if current_user.can(Permission.COMMENT) %}

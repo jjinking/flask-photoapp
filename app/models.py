@@ -308,9 +308,11 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
+    imagefile = db.Column(db.String(32), unique=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    comments = db.relationship('Comment', backref='post', lazy='dynamic',
+                               cascade='all, delete-orphan')
 
     @staticmethod
     def generate_fake(count=100):
@@ -335,6 +337,17 @@ class Post(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
+
+    def delete(self):
+        '''
+        Delete this object from db
+        '''
+        # Delete associated file
+        import os
+        os.remove(os.path.join(current_app.config['UPLOADS_DIR'],
+                               self.imagefile))
+        db.session.delete(self)
+        db.session.commit()
 
     def to_json(self):
         json_post = {

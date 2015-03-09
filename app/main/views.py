@@ -1,7 +1,11 @@
+import hashlib
+import os
+import time
 from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response
+    current_app, make_response, send_from_directory
 from flask.ext.login import login_required, current_user
 from flask.ext.sqlalchemy import get_debug_queries
+from werkzeug import secure_filename
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm
@@ -32,15 +36,43 @@ def server_shutdown():
     return 'Shutting down...'
 
 
+@main.route('/photos/<filename>')
+def uploaded_photos(filename):
+    '''
+    Serve user-uploaded photos
+    '''
+    return send_from_directory(current_app.config['UPLOADS_DIR'],
+                               filename)
+
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    form = PostForm()
+    form = PostForm(current_app.config['ALLOWED_EXTENSIONS'])
     if current_user.can(Permission.WRITE_ARTICLES) and \
             form.validate_on_submit():
+
+        # Save uploaded photo
+        try:
+            photofile = form.photo.data
+            hash = hashlib.sha1(str(time.time()) + \
+                                secure_filename(photofile.filename))
+            file_ext = os.path.splitext(photofile.filename)[1]
+            filename = hash.hexdigest()[:16] + file_ext
+            photofile.save(os.path.join(current_app.config['UPLOADS_DIR'],
+                                        filename))
+        except:
+            flash('Unable to upload photo', 'warning')
+            return redirect(url_for('.index'))
+            
         post = Post(body=form.body.data,
+                    imagefile=filename,
                     author=current_user._get_current_object())
         db.session.add(post)
+            
+        flash('Your post has successfully been saved.', 'success')
         return redirect(url_for('.index'))
+
+            
+
     page = request.args.get('page', 1, type=int)
     show_followed = False
     if current_user.is_authenticated():
@@ -143,7 +175,7 @@ def edit(id):
     if current_user != post.author and \
             not current_user.can(Permission.ADMINISTER):
         abort(403)
-    form = PostForm()
+    form = PostForm(current_app.config['ALLOWED_EXTENSIONS'])
     if form.validate_on_submit():
         post.body = form.body.data
         db.session.add(post)

@@ -1,15 +1,15 @@
 from kivy.app import App
-from kivy.properties import ObjectProperty
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.widget import Widget
+from kivy.uix.screenmanager import ScreenManager, Screen
 
+class LoginScreen(Screen):
+    pass
 
-class LoginScreen(BoxLayout):
+class PhotoAppScreenManager(ScreenManager):
     pass
 
 class PhotoApp(App):
     def build(self):
-        return LoginScreen()
+        return PhotoAppScreenManager()
 
 
 if __name__ == '__main__':

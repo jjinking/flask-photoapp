@@ -1,13 +1,11 @@
 #:kivy 1.0.9
 #:import FadeTransition kivy.uix.screenmanager.FadeTransition
 
-<PhotoAppScreenManager>:
-	transition: FadeTransition()
-	login_screen: _login_screen
-	LoginScreen:
-		id: _login_screen
 
 <LoginScreen>:
+	name: "login"
+	login_email: _login_email
+	login_password: _login_password
 	BoxLayout:
 		orientation: "vertical"
 		GridLayout:
@@ -17,8 +15,9 @@
 			Label:
 				height: "40dp"
 				size_hint_y: None
-				text: "Email"
+				text: "Login Email"
 			TextInput:
+				id: _login_email
 				height: "40dp"
 				size_hint: 1.5, None
 				focus: True
@@ -28,6 +27,7 @@
 				size_hint_y: None
 				text: "Password"
 			TextInput:
+				id: _login_password
 				height: "40dp"
 				size_hint: 1.5, None
 				password: True
@@ -36,3 +36,17 @@
 			text: "Login"
 			height: "40dp"
 			size_hint_y: None
+			on_press: root.login()
+
+<PostsScreen>:
+	name: "posts"
+	BoxLayout:
+		orientation: "vertical"
+		
+
+<PhotoAppScreenManager>:
+	transition: FadeTransition()
+	login_screen: _login_screen
+	LoginScreen:
+		id: _login_screen
+

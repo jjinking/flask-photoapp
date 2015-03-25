@@ -3,6 +3,7 @@ from base64 import b64encode
 from kivy.app import App
 from kivy.network.urlrequest import UrlRequest
 from kivy.storage.jsonstore import JsonStore
+from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 class UserCred(object):
@@ -37,31 +38,53 @@ class UserCred(object):
 
         return email, password
 
-class LoginScreen(Screen):
-    def login(self):
-        email = self.login_email.text
-        password = self.login_password.text
-        UserCred.store_cred(email, password)
-        
-        print "loaded", UserCred.load_cred()
-        
-class PostsScreen(Screen):
-    def get_api_headers(self, username, password):
+class WebApi(object):
+    
+    url = 'http://127.0.0.1:5000/api/v1.0/'
+    url_posts = url + 'posts/'
+    
+    @staticmethod
+    def _get_headers(email, pw):
         return {
             'Authorization': 'Basic ' + b64encode(
-                (username + ':' + password).encode('utf-8')).decode('utf-8'),
+                (email + ':' + pw).encode('utf-8')).decode('utf-8'),
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
+        
+    @staticmethod
+    def posts(email, pw, on_success, on_failure, on_error):
+        req = UrlRequest(WebApi.url_posts,
+                         on_success=on_success,
+                         on_failure=on_failure,
+                         on_error=on_error,
+                         req_headers=WebApi._get_headers(email, pw))
+        
+class LoginScreen(Screen):
+    def login(self):
+        UserCred.store_cred(self.login_email.text,
+                            self.login_password.text)
+        self.manager.current = "posts"
 
-    def get_posts(self):
-        e1, p1 = UserCred.load_cred()
-        url = 'http://127.0.0.1:5000/api/v1.0/posts/'
-        req = UrlRequest(url,
-                         on_success=lambda: "success!",
-                         on_failure=lambda: "failure!",
-                         on_error=lambda: "error!",
-                         req_headers=self.get_api_headers())
+class PostsScreen(Screen):
+    def on_enter(self):
+        self.load_posts()
+
+    def load_posts(self):
+        email, pw = UserCred.load_cred()
+        def populate_posts(req, results):
+            for post in results['posts']:
+                body = Button(text=post['body'][:20])
+                self.posts_list_container.add_widget(body)
+
+        def show_login_screen(req, results):
+            self.manager.current = "login"
+
+        WebApi.posts(email, pw,
+                     populate_posts,
+                     show_login_screen,
+                     show_login_screen)
+
 
 class PhotoAppScreenManager(ScreenManager):
     pass

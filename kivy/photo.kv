@@ -40,13 +40,27 @@
 
 <PostsScreen>:
 	name: "posts"
+	posts_list_container: _posts_list_container
 	BoxLayout:
 		orientation: "vertical"
-		
+		Label:
+			text: "Posts"
+			size_hint_y: .1
+		BoxLayout:
+			id: _posts_list_container
+			orientation: "vertical"
+
 
 <PhotoAppScreenManager>:
-	transition: FadeTransition()
+	id: _screen_manager
 	login_screen: _login_screen
+	posts_screen: _posts_screen
+
+	transition: FadeTransition()
+
 	LoginScreen:
 		id: _login_screen
-
+		manager: _screen_manager
+	PostsScreen:
+		id: _posts_screen
+		manager: _screen_manager

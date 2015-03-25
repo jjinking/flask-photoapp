@@ -350,8 +350,15 @@ class Post(db.Model):
         db.session.commit()
 
     def to_json(self):
+        image_url = ''
+        if self.imagefile:
+            image_url = url_for('main.uploaded_photos',
+                                filename=self.imagefile,
+                                _external=True)
         json_post = {
+            'id': self.id,
             'url': url_for('api.get_post', id=self.id, _external=True),
+            'img_url': image_url,
             'body': self.body,
             'body_html': self.body_html,
             'timestamp': self.timestamp,

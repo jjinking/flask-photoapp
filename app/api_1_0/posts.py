@@ -1,15 +1,15 @@
-from flask import jsonify, request, g, abort, url_for, current_app
+from flask import jsonify, request, g, abort, url_for, current_app, send_from_directory
+from sqlalchemy import desc
 from .. import db
 from ..models import Post, Permission
 from . import api
 from .decorators import permission_required
 from .errors import forbidden
 
-
 @api.route('/posts/')
 def get_posts():
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.paginate(
+    pagination = Post.query.order_by(desc(Post.id)).paginate(
         page, per_page=current_app.config['APP_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
@@ -26,12 +26,16 @@ def get_posts():
         'count': pagination.total
     })
 
-
 @api.route('/posts/<int:id>')
 def get_post(id):
     post = Post.query.get_or_404(id)
     return jsonify(post.to_json())
 
+# @api.route('/post-img/<int:id>')
+# def get_post_img(id):
+#     post = Post.query.get_or_404(id)
+#     return send_from_directory(current_app.config['UPLOADS_DIR'],
+#                                post.imagefile)
 
 @api.route('/posts/', methods=['POST'])
 @permission_required(Permission.WRITE_ARTICLES)

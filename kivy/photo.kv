@@ -31,6 +31,7 @@
 				height: "40dp"
 				size_hint: 1.5, None
 				password: True
+				multiline: False
 		Button:
 			id: _row_button
 			text: "Login"
@@ -50,12 +51,24 @@
 			id: _posts_list_container
 			orientation: "vertical"
 
+<PostScreen>:
+	name: "post"
+	post_details_container: _post_details_container
+	BoxLayout:
+		orientation: "vertical"
+		Label:
+			text: "Post"
+			size_hint_y: .1
+		BoxLayout:
+			id: _post_details_container
+			orientation: "vertical"
+			
 
 <PhotoAppScreenManager>:
 	id: _screen_manager
 	login_screen: _login_screen
 	posts_screen: _posts_screen
-
+	post_screen: _post_screen
 	transition: FadeTransition()
 
 	LoginScreen:
@@ -63,4 +76,8 @@
 		manager: _screen_manager
 	PostsScreen:
 		id: _posts_screen
+		manager: _screen_manager
+		post_screen: _post_screen
+	PostScreen:
+		id: _post_screen
 		manager: _screen_manager

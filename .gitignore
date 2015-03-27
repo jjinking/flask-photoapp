@@ -53,3 +53,6 @@ uploads/
 # Webassets files
 app/static/.webassets-cache/
 app/static/gen/
+
+# Kivy build files
+.buildozer/

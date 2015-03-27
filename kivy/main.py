@@ -4,8 +4,8 @@ from kivy.app import App
 from kivy.network.urlrequest import UrlRequest
 from kivy.properties import ObjectProperty
 from kivy.storage.jsonstore import JsonStore
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.image import AsyncImage
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, Screen
 
@@ -62,29 +62,25 @@ class LoginScreen(Screen):
                             self.login_password.text)
         self.manager.current = "posts"
 
-class PostListItem(Button):
-    def __init__(self, post, *args, **kwargs):
-        super(PostListItem, self).__init__(*args, **kwargs)
-        self.post = post
-
-class PostsScreen(Screen):
+class PostWidget(BoxLayout):
+    def __init__(self, img_src, post_text, *args, **kwargs):
+        super(PostWidget, self).__init__(*args, **kwargs)
+        self.post_image.source = img_src
+        self.post_text.text = post_text
+        
+class PostCarouselScreen(Screen):
     def on_enter(self):
-        self.posts_list_container.clear_widgets()
+        '''
+        When entering this screen, clear widgets and fetch posts
+        '''
+        self.carousel.clear_widgets()
         self.load_posts()
 
     def load_posts(self):
-
-        def set_post_screen_post(instance):
-            '''
-            Set the post_id of PostScreen
-            '''
-            self.post_screen.post = instance.post
-        
         def populate_posts(req, results):
             for post in results['posts']:
-                body = PostListItem(post, text=post['body'][:40])
-                body.bind(on_press=set_post_screen_post)
-                self.posts_list_container.add_widget(body)
+                post_widget = PostWidget(post['img_url'], post['body'])
+                self.carousel.add_widget(post_widget)
 
         def show_login_screen(req, results):
             self.manager.current = "login"
@@ -93,25 +89,6 @@ class PostsScreen(Screen):
                      show_login_screen,
                      show_login_screen)
 
-class PostScreen(Screen):
-    post = ObjectProperty(0)
-
-    def on_post(self, instance, value):
-        '''
-        When the post object changes, load that post into the screen
-        '''
-        # Set the current screen to the post screen
-        self.manager.current = "post"
-
-        if self.post['img_url']:
-            img_widget = AsyncImage(source=self.post['img_url'])
-        else:
-            img_widget = Label(text='No Photo Available')
-        self.post_details_container.add_widget(img_widget)
-
-        body = Label(text=self.post['body'])
-        self.post_details_container.add_widget(body)
-        
 class PhotoAppScreenManager(ScreenManager):
     pass
 

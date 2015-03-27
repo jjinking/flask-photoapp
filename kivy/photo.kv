@@ -1,7 +1,6 @@
 #:kivy 1.0.9
 #:import FadeTransition kivy.uix.screenmanager.FadeTransition
 
-
 <LoginScreen>:
 	name: "login"
 	login_email: _login_email
@@ -39,45 +38,32 @@
 			size_hint_y: None
 			on_press: root.login()
 
-<PostsScreen>:
+<PostCarouselScreen>:
 	name: "posts"
-	posts_list_container: _posts_list_container
-	BoxLayout:
-		orientation: "vertical"
-		Label:
-			text: "Posts"
-			size_hint_y: .1
-		BoxLayout:
-			id: _posts_list_container
-			orientation: "vertical"
+	carousel: _carousel
+	Carousel:
+		id: _carousel
+		loop: True
 
-<PostScreen>:
-	name: "post"
-	post_details_container: _post_details_container
-	BoxLayout:
-		orientation: "vertical"
-		Label:
-			text: "Post"
-			size_hint_y: .1
-		BoxLayout:
-			id: _post_details_container
-			orientation: "vertical"
-			
+<PostWidget>:
+	post_image: _post_image
+	post_text: _post_text
 
+	orientation: "vertical"
+	AsyncImage:
+		id: _post_image
+	Label:
+		id: _post_text
+	
 <PhotoAppScreenManager>:
 	id: _screen_manager
 	login_screen: _login_screen
 	posts_screen: _posts_screen
-	post_screen: _post_screen
 	transition: FadeTransition()
 
 	LoginScreen:
 		id: _login_screen
 		manager: _screen_manager
-	PostsScreen:
+	PostCarouselScreen:
 		id: _posts_screen
-		manager: _screen_manager
-		post_screen: _post_screen
-	PostScreen:
-		id: _post_screen
 		manager: _screen_manager

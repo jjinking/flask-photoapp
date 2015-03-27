@@ -9,7 +9,7 @@
 		orientation: "vertical"
 		GridLayout:
 			cols: 2
-			padding: "20dp"
+			padding: "10dp"
 			spacing: "4dp"
 			Label:
 				height: "40dp"
@@ -18,7 +18,7 @@
 			TextInput:
 				id: _login_email
 				height: "40dp"
-				size_hint: 1.5, None
+				size_hint: 1.6, None
 				focus: True
 				multiline: False
 			Label:
@@ -50,10 +50,18 @@
 	post_text: _post_text
 
 	orientation: "vertical"
+	padding: "10dp"
+	spacing: "8dp"
 	AsyncImage:
 		id: _post_image
+		allow_stretch: True
+		size_hint_y: 1.6
 	Label:
 		id: _post_text
+		text_size: self.size
+		padding: "20dp", "20dp"
+		valign: "top"
+		size_hint_y: .4
 	
 <PhotoAppScreenManager>:
 	id: _screen_manager

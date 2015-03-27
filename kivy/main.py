@@ -65,7 +65,10 @@ class LoginScreen(Screen):
 class PostWidget(BoxLayout):
     def __init__(self, img_src, post_text, *args, **kwargs):
         super(PostWidget, self).__init__(*args, **kwargs)
-        self.post_image.source = img_src
+        if img_src:
+            self.post_image.source = img_src
+        else:
+            self.post_image.source = os.path.join('img', 'default.jpg')
         self.post_text.text = post_text
         
 class PostCarouselScreen(Screen):

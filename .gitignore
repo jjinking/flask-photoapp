@@ -46,3 +46,10 @@ venv
 
 # Uploads folder
 uploads/
+
+# Environment settings file
+.env
+
+# Webassets files
+app/static/.webassets-cache/
+app/static/gen/
